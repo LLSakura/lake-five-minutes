@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>湖边五分钟</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="game-area" aria-label="湖边五分钟游戏区域">
+        <div class="top-bar">
+          <div>
+            <h1>湖边五分钟</h1>
+            <p id="seasonLabel">春日湖畔</p>
+          </div>
+          <div class="stats">
+            <span id="timer">05:00</span>
+            <span id="coins">0 金币</span>
+          </div>
+        </div>
+
+        <div class="canvas-frame">
+          <canvas id="gameCanvas" width="960" height="540" aria-label="钓鱼游戏画面"></canvas>
+          <div id="toast" class="toast" hidden></div>
+        </div>
+
+        <div class="action-row">
+          <button id="castButton" type="button">抛竿</button>
+          <button id="sellButton" type="button">卖出鱼篓</button>
+          <button id="newRunButton" type="button">新一局</button>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <section class="panel-block">
+          <h2>鱼篓</h2>
+          <div id="basket" class="basket empty">还没有鱼</div>
+        </section>
+
+        <section class="panel-block">
+          <h2>升级</h2>
+          <div id="upgrades" class="upgrade-list"></div>
+        </section>
+
+        <section class="panel-block">
+          <h2>本局任务</h2>
+          <div id="quests" class="quest-list"></div>
+        </section>
+
+        <section class="panel-block">
+          <h2>图鉴</h2>
+          <div id="dex" class="dex-grid"></div>
+        </section>
+      </aside>
+    </main>
+
+    <div id="summaryModal" class="modal" hidden>
+      <div class="modal-card">
+        <h2>本局结算</h2>
+        <div id="summaryBody"></div>
+        <button id="summaryRestart" type="button">再来一局</button>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
