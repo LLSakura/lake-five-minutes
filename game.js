@@ -19,7 +19,7 @@ const summaryRestart = document.getElementById("summaryRestart");
 const RUN_SECONDS = 300;
 const shoreX = 185;
 const waterTop = 235;
-const reelTargetDistance = 28;
+const reelTargetDistance = 26;
 
 const seasons = [
   {
@@ -342,17 +342,17 @@ function update(dt) {
 
   if (state.mode === "reeling") {
     const fish = state.currentFish;
-    const rodPower = 18 + state.upgrades.rod * 7;
-    const lineLimit = 88 + state.upgrades.line * 16;
-    const fishFight = fish.struggle * (0.45 + Math.sin(state.wave * 4.6) * 0.16 + Math.random() * 0.08);
+    const rodPower = 17 + state.upgrades.rod * 6.5;
+    const lineLimit = 86 + state.upgrades.line * 15;
+    const fishFight = fish.struggle * (0.5 + Math.sin(state.wave * 4.7) * 0.18 + Math.random() * 0.08);
     const pull = pointer.down ? pointer.pull : 0;
-    const sweetSpot = 0.24 + fish.struggle * 0.08;
+    const sweetSpot = 0.26 + fish.struggle * 0.09;
 
-    state.tension += (pull * 34 * fish.struggle - 20 - state.upgrades.line * 3) * dt;
-    state.tension += Math.max(0, fishFight - 0.62) * 5 * dt;
+    state.tension += (pull * 38 * fish.struggle - 19 - state.upgrades.line * 2.8) * dt;
+    state.tension += Math.max(0, fishFight - 0.61) * 6 * dt;
     state.tension = Math.max(0, Math.min(110, state.tension));
 
-    const progress = (pull - sweetSpot) * rodPower * dt - fishFight * 1.45 * dt;
+    const progress = (pull - sweetSpot) * rodPower * dt - fishFight * 1.7 * dt;
     state.distance -= progress;
     state.distance = Math.max(0, Math.min(122, state.distance));
     state.fishX = shoreX + 110 + state.distance * 5.2;
@@ -520,7 +520,7 @@ function drawHud() {
   }
 
   drawBar(30, 28, 260, 22, 1 - state.distance / 120, "#77b57b", "距离");
-  const lineLimit = 88 + state.upgrades.line * 16;
+  const lineLimit = 86 + state.upgrades.line * 15;
   drawBar(30, 62, 260, 22, state.tension / lineLimit, "#e66d4f", "张力");
   drawBar(30, 96, 260, 18, pointer.pull, "#e8b85b", "力道");
 }
@@ -538,9 +538,13 @@ function drawBar(x, y, w, h, pct, color, label) {
   ctx.fillText(label, x + 8, y + h - 6);
 }
 
-function renderPanel() {
+function renderLiveStats() {
   timerEl.textContent = formatTime(state.timeLeft);
-  coinsEl.textContent = `${state.coins} 金币`;
+  coinsEl.textContent = state.coins + " \u91d1\u5e01";
+}
+
+function renderPanel() {
+  renderLiveStats();
   seasonLabel.textContent = `${state.season.name} · 当前鱼饵：${currentBaitName()}`;
   castButton.disabled = state.mode !== "idle" || state.ended;
   sellButton.disabled = !state.basket.length || state.ended;
@@ -642,7 +646,7 @@ function loop(now) {
   update(dt);
   tickToast(deltaMs);
   draw();
-  renderPanel();
+  renderLiveStats();
   requestAnimationFrame(loop);
 }
 
