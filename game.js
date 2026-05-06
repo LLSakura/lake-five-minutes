@@ -414,98 +414,257 @@ function drawLandscape(s) {
   ctx.fillStyle = s.far;
   for (let i = 0; i < 7; i++) {
     ctx.beginPath();
-    ctx.moveTo(i * 160 - 40, waterTop);
-    ctx.lineTo(i * 160 + 70, 115 + (i % 3) * 25);
+    ctx.moveTo(i * 160 - 48, waterTop);
+    ctx.lineTo(i * 160 + 68, 118 + (i % 3) * 24);
     ctx.lineTo(i * 160 + 210, waterTop);
     ctx.closePath();
     ctx.fill();
+    ctx.fillStyle = "rgba(255, 246, 190, 0.12)";
+    ctx.fillRect(i * 160 + 50, 150 + (i % 3) * 24, 28, 5);
+    ctx.fillStyle = s.far;
   }
+
+  ctx.fillStyle = "rgba(43, 60, 48, 0.18)";
+  ctx.fillRect(0, 201, canvas.width, 7);
   ctx.fillStyle = s.grass;
-  ctx.fillRect(0, 205, canvas.width, 48);
+  ctx.fillRect(0, 208, canvas.width, 45);
+  ctx.fillStyle = "rgba(255, 240, 144, 0.45)";
+  for (let i = 0; i < 34; i++) {
+    ctx.fillRect((i * 53 + 15) % canvas.width, 219 + (i % 4) * 8, 7, 7);
+  }
   ctx.fillStyle = s.accent;
-  for (let i = 0; i < 28; i++) {
-    ctx.fillRect((i * 43) % canvas.width, 210 + (i % 5) * 7, 8, 8);
+  for (let i = 0; i < 24; i++) {
+    ctx.fillRect((i * 47) % canvas.width, 213 + (i % 5) * 7, 6, 6);
   }
 }
 
 function drawWater(s) {
-  ctx.fillStyle = s.water;
+  const grd = ctx.createLinearGradient(0, waterTop, 0, canvas.height);
+  grd.addColorStop(0, s.water);
+  grd.addColorStop(1, s.waterDark);
+  ctx.fillStyle = grd;
   ctx.fillRect(0, waterTop, canvas.width, canvas.height - waterTop);
-  ctx.fillStyle = s.waterDark;
-  for (let y = waterTop + 24; y < canvas.height; y += 42) {
-    for (let x = -80; x < canvas.width; x += 120) {
-      const offset = Math.sin(state.wave * 1.8 + y * 0.03) * 22;
-      ctx.fillRect(x + offset, y, 58, 5);
-      ctx.fillRect(x + 72 + offset, y + 10, 34, 5);
+
+  ctx.fillStyle = "rgba(255, 247, 204, 0.12)";
+  ctx.fillRect(0, waterTop, canvas.width, 8);
+  ctx.fillStyle = "rgba(25, 73, 91, 0.42)";
+  for (let y = waterTop + 30; y < canvas.height; y += 39) {
+    for (let x = -90; x < canvas.width; x += 118) {
+      const offset = Math.sin(state.wave * 1.8 + y * 0.035) * 24;
+      ctx.fillRect(x + offset, y, 56, 5);
+      ctx.fillRect(x + 70 + offset, y + 11, 33, 5);
     }
+  }
+  ctx.fillStyle = "rgba(255, 245, 190, 0.18)";
+  for (let i = 0; i < 8; i++) {
+    const x = (i * 143 + state.wave * 16) % canvas.width;
+    const y = waterTop + 62 + (i * 37) % 210;
+    ctx.fillRect(x, y, 22, 4);
   }
 }
 
 function drawDockAndPlayer(s) {
-  ctx.fillStyle = "#806143";
-  ctx.fillRect(0, 300, 230, 34);
-  ctx.fillRect(22, 334, 22, 120);
-  ctx.fillRect(150, 334, 22, 120);
-  ctx.fillStyle = "#5c432f";
-  for (let x = 14; x < 215; x += 42) ctx.fillRect(x, 300, 6, 34);
+  ctx.save();
 
-  ctx.fillStyle = "#4f6d7a";
-  ctx.fillRect(118, 244, 34, 46);
-  ctx.fillStyle = "#f4c9a0";
-  ctx.fillRect(121, 216, 28, 28);
-  ctx.fillStyle = "#26312a";
-  ctx.fillRect(118, 210, 34, 12);
-  ctx.fillRect(139, 226, 5, 5);
+  ctx.fillStyle = "#5c3c25";
+  ctx.fillRect(0, 301, 242, 18);
+  ctx.fillStyle = "#8f6841";
+  ctx.fillRect(0, 319, 242, 28);
+  for (let x = -10; x < 250; x += 42) {
+    ctx.fillStyle = "#a87949";
+    ctx.fillRect(x, 302, 36, 45);
+    ctx.fillStyle = "rgba(255, 225, 166, 0.24)";
+    ctx.fillRect(x + 6, 309, 20, 4);
+    ctx.fillStyle = "rgba(58, 36, 22, 0.35)";
+    ctx.fillRect(x + 30, 304, 4, 42);
+  }
+  ctx.fillStyle = "#5b4129";
+  ctx.fillRect(22, 347, 25, 122);
+  ctx.fillRect(154, 347, 25, 122);
+  ctx.fillStyle = "rgba(255, 226, 171, 0.16)";
+  ctx.fillRect(27, 353, 5, 112);
+  ctx.fillRect(159, 353, 5, 112);
+
+  const active = state.mode === "waiting" || state.mode === "reeling";
+  const bob = Math.sin(state.wave * (active ? 4.2 : 2.1)) * (active ? 2.4 : 1.1);
+  const reelLean = state.mode === "reeling" ? Math.sin(state.wave * 7.5) * 3.5 : 0;
+  const px = 126;
+  const py = 219 + bob;
+
+  ctx.fillStyle = "rgba(30, 40, 34, 0.2)";
+  ctx.fillRect(px - 30, py + 88, 74, 8);
+
+  ctx.fillStyle = "#2f3a32";
+  ctx.fillRect(px - 22, py + 96, 17, 8);
+  ctx.fillRect(px + 20, py + 96, 17, 8);
+  ctx.fillStyle = "#4c7180";
+  ctx.fillRect(px - 18, py + 56, 18, 40);
+  ctx.fillRect(px + 2, py + 56, 18, 40);
+  ctx.fillStyle = "#314f5e";
+  ctx.fillRect(px - 18, py + 86, 18, 10);
+  ctx.fillRect(px + 2, py + 86, 18, 10);
+
+  ctx.fillStyle = "#d9965e";
+  ctx.fillRect(px - 24, py + 31, 14, 43);
+  ctx.fillRect(px + 18, py + 33 + reelLean * 0.2, 12, 36);
+  ctx.fillStyle = "#f0bd85";
+  ctx.fillRect(px - 26, py + 67, 14, 12);
+  ctx.fillRect(px + 24, py + 62 + reelLean * 0.2, 12, 12);
+
+  ctx.fillStyle = "#799468";
+  ctx.fillRect(px - 21, py + 40, 46, 50);
+  ctx.fillStyle = "#3f605c";
+  ctx.fillRect(px - 15, py + 43, 14, 44);
+  ctx.fillRect(px + 5, py + 43, 14, 44);
+  ctx.fillStyle = "#f1d26b";
+  ctx.fillRect(px - 20, py + 52, 40, 4);
   ctx.fillStyle = s.accent;
-  ctx.fillRect(112, 288, 48, 9);
+  ctx.fillRect(px - 23, py + 87, 52, 8);
 
-  ctx.strokeStyle = "#4c3628";
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(150, 250);
-  ctx.lineTo(275, 205);
-  ctx.stroke();
-  ctx.lineWidth = 1;
+  ctx.fillStyle = "#f6c28a";
+  ctx.fillRect(px - 16, py + 10, 34, 34);
+  ctx.fillStyle = "#b97445";
+  ctx.fillRect(px - 15, py + 37, 32, 6);
+  ctx.fillStyle = "#26312a";
+  ctx.fillRect(px - 6, py + 25, 5, 5);
+  ctx.fillRect(px + 10, py + 25, 5, 5);
+  ctx.fillRect(px + 3, py + 34, 8, 3);
+
+  ctx.fillStyle = "#3b2a1b";
+  ctx.fillRect(px - 19, py + 4, 40, 12);
+  ctx.fillStyle = "#d6ad54";
+  ctx.fillRect(px - 30, py - 2, 62, 10);
+  ctx.fillRect(px - 18, py - 14, 39, 18);
+  ctx.fillStyle = "#f3d77b";
+  ctx.fillRect(px - 12, py - 10, 24, 5);
+  ctx.fillStyle = "#7a4d24";
+  ctx.fillRect(px - 18, py + 2, 39, 4);
+
+  const tipX = 292 + (state.mode === "reeling" ? Math.sin(state.wave * 8) * 8 : Math.sin(state.wave * 2) * 2);
+  const tipY = 205 + (state.mode === "reeling" ? Math.sin(state.wave * 6) * 5 : 0);
+  drawFishingRod(px + 25, py + 62 + reelLean * 0.2, tipX, tipY);
+  ctx.restore();
 }
 
-function drawFishingLine() {
-  if (state.mode === "idle") return;
-  const lineEndX = state.mode === "reeling" ? state.fishX : 650;
-  const lineEndY = state.mode === "reeling" ? state.fishY : 332;
-  ctx.strokeStyle = "#f7f0cf";
+function drawFishingRod(baseX, baseY, tipX, tipY) {
+  ctx.save();
+  ctx.strokeStyle = "#2f2118";
+  ctx.lineWidth = 8;
+  ctx.beginPath();
+  ctx.moveTo(baseX, baseY);
+  ctx.lineTo(tipX, tipY);
+  ctx.stroke();
+
+  ctx.strokeStyle = "#8d5a2f";
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(baseX, baseY);
+  ctx.lineTo(tipX, tipY);
+  ctx.stroke();
+
+  ctx.strokeStyle = "rgba(255, 214, 139, 0.72)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(275, 205);
-  ctx.lineTo(lineEndX, lineEndY);
+  ctx.moveTo(baseX + 3, baseY - 3);
+  ctx.lineTo(tipX - 4, tipY + 2);
   ctx.stroke();
+
+  ctx.fillStyle = "#2f2118";
+  ctx.fillRect(baseX - 8, baseY - 6, 20, 12);
+  ctx.fillStyle = "#d7a14e";
+  ctx.fillRect(baseX - 5, baseY - 4, 14, 8);
+  ctx.fillStyle = "#77c8ce";
+  ctx.fillRect(baseX - 1, baseY - 2, 7, 4);
+  ctx.fillStyle = "#f5d572";
+  ctx.fillRect(tipX - 4, tipY - 4, 8, 8);
+  ctx.restore();
+}
+function drawFishingLine() {
+  if (state.mode === "idle") return;
+  const rodTipX = 292 + (state.mode === "reeling" ? Math.sin(state.wave * 8) * 8 : Math.sin(state.wave * 2) * 2);
+  const rodTipY = 205 + (state.mode === "reeling" ? Math.sin(state.wave * 6) * 5 : 0);
+  const lineEndX = state.mode === "reeling" ? state.fishX : 650;
+  const lineEndY = state.mode === "reeling" ? state.fishY : 332 + Math.sin(state.wave * 3.5) * 4;
+  ctx.strokeStyle = "rgba(255, 249, 218, 0.92)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(rodTipX, rodTipY);
+  ctx.quadraticCurveTo((rodTipX + lineEndX) / 2, rodTipY + 18, lineEndX, lineEndY);
+  ctx.stroke();
+
+  ctx.fillStyle = "#26312a";
+  ctx.fillRect(lineEndX - 5, lineEndY - 5, 10, 10);
   ctx.fillStyle = "#e85c48";
-  ctx.fillRect(lineEndX - 4, lineEndY - 4, 8, 8);
+  ctx.fillRect(lineEndX - 3, lineEndY - 8, 6, 11);
+  ctx.fillStyle = "#fff3aa";
+  ctx.fillRect(lineEndX - 2, lineEndY - 6, 3, 3);
 }
 
 function drawFishShadows() {
   if (state.mode === "waiting") {
-    drawFish(state.fishX, state.fishY, "#2f6f83", 1.1, true);
+    drawFish(state.fishX + Math.sin(state.wave * 3) * 8, state.fishY + Math.cos(state.wave * 2.5) * 4, "#2f6f83", 1.1, true);
   }
   if (state.mode === "reeling" && state.currentFish) {
     drawFish(state.fishX, state.fishY, state.currentFish.color, state.currentFish.size, false);
   }
   for (let i = 0; i < 7; i++) {
     const x = (i * 137 + state.wave * 18) % 990;
-    const y = 288 + (i * 49) % 210;
+    const y = 288 + (i * 49) % 210 + Math.sin(state.wave * 2 + i) * 3;
     drawFish(x, y, "rgba(30,78,90,0.22)", 0.75, true);
   }
 }
 
 function drawFish(x, y, color, scale, shadow) {
-  const w = 28 * scale;
-  const h = 14 * scale;
-  ctx.fillStyle = color;
-  ctx.fillRect(x - w / 2, y - h / 2, w, h);
-  ctx.fillRect(x + w / 2 - 2, y - h / 4, 10 * scale, h / 2);
-  if (!shadow) {
-    ctx.fillStyle = "#26312a";
-    ctx.fillRect(x - w / 2 + 5, y - 2, 3, 3);
+  const w = 32 * scale;
+  const h = 17 * scale;
+  const wiggle = Math.sin(state.wave * 8 + x * 0.02) * 2 * scale;
+  ctx.save();
+  ctx.translate(x, y + wiggle * 0.35);
+
+  if (shadow) {
+    ctx.fillStyle = color;
+    ctx.fillRect(-w / 2, -h / 2, w, h);
+    ctx.fillRect(w / 2 - 3 * scale, -h / 4 + wiggle * 0.2, 11 * scale, h / 2);
+    ctx.fillRect(-w / 2 - 8 * scale, -h / 3 - wiggle * 0.2, 10 * scale, h / 1.5);
+    ctx.restore();
+    return;
   }
+
+  ctx.fillStyle = "rgba(20, 34, 32, 0.28)";
+  ctx.fillRect(-w / 2 - 4, h / 2 + 5, w + 14, 5 * scale);
+
+  ctx.fillStyle = "#26312a";
+  ctx.fillRect(-w / 2 - 9 * scale, -h / 2 - 2 * scale, w + 18 * scale, h + 4 * scale);
+  ctx.fillRect(w / 2 - 2 * scale, -h / 3 + wiggle - 2 * scale, 13 * scale, h / 1.5 + 4 * scale);
+  ctx.fillRect(-w / 2 - 13 * scale, -h / 3 - wiggle - 2 * scale, 13 * scale, h / 1.5 + 4 * scale);
+
+  ctx.fillStyle = color;
+  ctx.fillRect(-w / 2, -h / 2, w, h);
+  ctx.fillRect(w / 2 - 2 * scale, -h / 4 + wiggle, 11 * scale, h / 2);
+  ctx.fillRect(-w / 2 - 10 * scale, -h / 3 - wiggle, 11 * scale, h / 1.5);
+
+  ctx.fillStyle = "rgba(255, 255, 255, 0.46)";
+  ctx.fillRect(-w / 2 + 7 * scale, -h / 2 + 3 * scale, w * 0.42, 3 * scale);
+  ctx.fillStyle = "rgba(255, 246, 184, 0.42)";
+  ctx.fillRect(-w / 2 + 5 * scale, h / 2 - 4 * scale, w * 0.5, 2 * scale);
+
+  ctx.fillStyle = "#26312a";
+  ctx.fillRect(-w / 2 + 7 * scale, -3 * scale, 4 * scale, 4 * scale);
+  ctx.fillStyle = "#fff7ce";
+  ctx.fillRect(-w / 2 + 8 * scale, -2 * scale, 1.5 * scale, 1.5 * scale);
+
+  ctx.fillStyle = "rgba(38, 49, 42, 0.32)";
+  for (let i = 0; i < 3; i++) {
+    ctx.fillRect(-w / 2 + (15 + i * 7) * scale, -h / 2 + 6 * scale, 2 * scale, h - 9 * scale);
+  }
+
+  if (color === "#8f8cff" || color === "#c8d8ff" || color === "#ecfbff") {
+    ctx.fillStyle = "rgba(255, 255, 210, 0.92)";
+    ctx.fillRect(w / 2 + 9 * scale, -h / 2 - 5 * scale, 4 * scale, 4 * scale);
+    ctx.fillRect(-w / 2 - 14 * scale, h / 2 + 2 * scale, 3 * scale, 3 * scale);
+  }
+
+  ctx.restore();
 }
 
 function drawHud() {
