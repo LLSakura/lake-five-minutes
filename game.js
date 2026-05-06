@@ -19,7 +19,7 @@ const summaryRestart = document.getElementById("summaryRestart");
 const RUN_SECONDS = 300;
 const shoreX = 185;
 const waterTop = 235;
-const reelTargetDistance = 20;
+const reelTargetDistance = 28;
 
 const seasons = [
   {
@@ -225,7 +225,7 @@ function hookFish() {
   state.currentFish = chooseFish();
   state.mode = "reeling";
   state.distance = 100;
-  state.tension = 20;
+  state.tension = 8;
   showToast(`${state.currentFish.name} 上钩了，拖拽控制力道。`, 1500);
   renderPanel();
 }
@@ -342,17 +342,17 @@ function update(dt) {
 
   if (state.mode === "reeling") {
     const fish = state.currentFish;
-    const rodPower = 10 + state.upgrades.rod * 5;
-    const lineLimit = 68 + state.upgrades.line * 12;
-    const fishFight = fish.struggle * (0.7 + Math.sin(state.wave * 5.5) * 0.3 + Math.random() * 0.15);
+    const rodPower = 18 + state.upgrades.rod * 7;
+    const lineLimit = 88 + state.upgrades.line * 16;
+    const fishFight = fish.struggle * (0.45 + Math.sin(state.wave * 4.6) * 0.16 + Math.random() * 0.08);
     const pull = pointer.down ? pointer.pull : 0;
-    const sweetSpot = 0.34 + fish.struggle * 0.14;
+    const sweetSpot = 0.24 + fish.struggle * 0.08;
 
-    state.tension += (pull * 58 * fish.struggle - 13 - state.upgrades.line * 2) * dt;
-    state.tension += Math.max(0, fishFight - 0.7) * 10 * dt;
+    state.tension += (pull * 34 * fish.struggle - 20 - state.upgrades.line * 3) * dt;
+    state.tension += Math.max(0, fishFight - 0.62) * 5 * dt;
     state.tension = Math.max(0, Math.min(110, state.tension));
 
-    const progress = (pull - sweetSpot) * rodPower * dt - fishFight * 3.2 * dt;
+    const progress = (pull - sweetSpot) * rodPower * dt - fishFight * 1.45 * dt;
     state.distance -= progress;
     state.distance = Math.max(0, Math.min(122, state.distance));
     state.fishX = shoreX + 110 + state.distance * 5.2;
@@ -520,7 +520,7 @@ function drawHud() {
   }
 
   drawBar(30, 28, 260, 22, 1 - state.distance / 120, "#77b57b", "距离");
-  const lineLimit = 68 + state.upgrades.line * 12;
+  const lineLimit = 88 + state.upgrades.line * 16;
   drawBar(30, 62, 260, 22, state.tension / lineLimit, "#e66d4f", "张力");
   drawBar(30, 96, 260, 18, pointer.pull, "#e8b85b", "力道");
 }
@@ -610,8 +610,8 @@ canvas.addEventListener("pointerdown", (event) => {
 canvas.addEventListener("pointermove", (event) => {
   if (!pointer.down) return;
   const pos = pointerFromEvent(event);
-  const drag = Math.max(0, pointer.x - pos.x + (pos.y - pointer.y) * 0.35);
-  pointer.pull = Math.max(0, Math.min(1, drag / 190));
+  const drag = Math.hypot(pos.x - pointer.x, pos.y - pointer.y);
+  pointer.pull = Math.max(0, Math.min(0.95, drag / 180));
 });
 
 canvas.addEventListener("pointerup", (event) => {
