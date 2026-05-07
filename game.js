@@ -15,6 +15,10 @@ const newRunButton = document.getElementById("newRunButton");
 const summaryModal = document.getElementById("summaryModal");
 const summaryBody = document.getElementById("summaryBody");
 const summaryRestart = document.getElementById("summaryRestart");
+const panelLayer = document.getElementById("panelLayer");
+const panelButtons = document.querySelectorAll("[data-open-panel]");
+const panelWindows = document.querySelectorAll("[data-panel]");
+const panelCloseButtons = document.querySelectorAll("[data-close-panel]");
 
 const RUN_SECONDS = 300;
 const shoreX = 185;
@@ -131,6 +135,20 @@ let pointer = { down: false, x: 0, y: 0, pull: 0 };
 let lastFrame = performance.now();
 let toastTimer = 0;
 
+function openPanel(panelName) {
+  panelLayer.hidden = false;
+  panelWindows.forEach((panel) => {
+    panel.hidden = panel.dataset.panel !== panelName;
+  });
+  renderPanel();
+}
+
+function closePanels() {
+  panelLayer.hidden = true;
+  panelWindows.forEach((panel) => {
+    panel.hidden = true;
+  });
+}
 function newState() {
   const season = seasons[Math.floor(Math.random() * seasons.length)];
   return {
@@ -172,6 +190,7 @@ function startRun() {
   state = newState();
   pointer = { down: false, x: 0, y: 0, pull: 0 };
   summaryModal.hidden = true;
+  closePanels();
   showToast("点击抛竿，等鱼影靠近后拖拽收线。", 2200);
   renderPanel();
 }
@@ -788,6 +807,21 @@ canvas.addEventListener("pointercancel", () => {
   pointer.pull = 0;
 });
 
+panelButtons.forEach((button) => {
+  button.addEventListener("click", () => openPanel(button.dataset.openPanel));
+});
+
+panelCloseButtons.forEach((button) => {
+  button.addEventListener("click", closePanels);
+});
+
+panelLayer.addEventListener("click", (event) => {
+  if (event.target === panelLayer) closePanels();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !panelLayer.hidden) closePanels();
+});
 castButton.addEventListener("click", castLine);
 sellButton.addEventListener("click", sellBasket);
 newRunButton.addEventListener("click", startRun);

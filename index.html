@@ -25,35 +25,43 @@
           <div id="toast" class="toast" hidden></div>
         </div>
 
-        <div class="action-row">
+        <div class="action-row primary-actions">
           <button id="castButton" type="button">抛竿</button>
-          <button id="sellButton" type="button">卖出鱼篓</button>
+          <button type="button" data-open-panel="basket">鱼篓</button>
+          <button type="button" data-open-panel="shop">商店</button>
+          <button type="button" data-open-panel="quests">任务</button>
+          <button type="button" data-open-panel="dex">图鉴</button>
           <button id="newRunButton" type="button">新一局</button>
         </div>
       </section>
-
-      <aside class="side-panel">
-        <section class="panel-block">
-          <h2>鱼篓</h2>
-          <div id="basket" class="basket empty">还没有鱼</div>
-        </section>
-
-        <section class="panel-block">
-          <h2>升级</h2>
-          <div id="upgrades" class="upgrade-list"></div>
-        </section>
-
-        <section class="panel-block">
-          <h2>本局任务</h2>
-          <div id="quests" class="quest-list"></div>
-        </section>
-
-        <section class="panel-block">
-          <h2>图鉴</h2>
-          <div id="dex" class="dex-grid"></div>
-        </section>
-      </aside>
     </main>
+
+    <div id="panelLayer" class="panel-layer" hidden>
+      <section id="basketPanel" class="panel-block game-window" data-panel="basket" hidden>
+        <button class="window-close" type="button" data-close-panel aria-label="关闭鱼篓">×</button>
+        <h2>鱼篓</h2>
+        <div id="basket" class="basket empty">还没有鱼</div>
+        <button id="sellButton" type="button">卖出鱼篓</button>
+      </section>
+
+      <section id="shopPanel" class="panel-block game-window" data-panel="shop" hidden>
+        <button class="window-close" type="button" data-close-panel aria-label="关闭商店">×</button>
+        <h2>商店</h2>
+        <div id="upgrades" class="upgrade-list"></div>
+      </section>
+
+      <section id="questsPanel" class="panel-block game-window" data-panel="quests" hidden>
+        <button class="window-close" type="button" data-close-panel aria-label="关闭任务">×</button>
+        <h2>本局任务</h2>
+        <div id="quests" class="quest-list"></div>
+      </section>
+
+      <section id="dexPanel" class="panel-block game-window" data-panel="dex" hidden>
+        <button class="window-close" type="button" data-close-panel aria-label="关闭图鉴">×</button>
+        <h2>图鉴</h2>
+        <div id="dex" class="dex-grid"></div>
+      </section>
+    </div>
 
     <div id="summaryModal" class="modal" hidden>
       <div class="modal-card">
