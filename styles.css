@@ -650,6 +650,174 @@ canvas {
   font-weight: 800;
 }
 
+.catch-result-modal {
+  z-index: 11;
+}
+
+.catch-card {
+  position: relative;
+  overflow: hidden;
+  width: min(520px, 100%);
+}
+
+.catch-card::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 2px dashed rgba(116, 66, 28, 0.24);
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.catch-card.is-rare {
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.22),
+    0 0 0 5px rgba(242, 198, 93, 0.46),
+    0 9px 0 var(--gold-dark),
+    0 20px 42px rgba(21, 31, 28, 0.28);
+}
+
+.catch-card.is-dream {
+  background:
+    radial-gradient(circle at 24% 18%, rgba(255, 255, 206, 0.85), transparent 18%),
+    radial-gradient(circle at 82% 12%, rgba(151, 226, 232, 0.55), transparent 22%),
+    linear-gradient(180deg, #fff8d8, #e8d7a7);
+}
+
+.catch-result-body {
+  position: relative;
+  display: grid;
+  gap: 14px;
+}
+
+.catch-fish-art {
+  display: grid;
+  place-items: center;
+  min-height: 112px;
+  border: 4px solid var(--deep-line);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.38), transparent 46%),
+    linear-gradient(180deg, #91d1db, #4f9a9a);
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.22), inset 0 -5px 0 rgba(31, 81, 84, 0.22);
+}
+
+.catch-fish-art span {
+  position: relative;
+  width: 118px;
+  height: 46px;
+  border: 4px solid var(--deep-line);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.46), transparent 42%),
+    var(--fish-color, #d4dce1);
+  box-shadow: 0 8px 0 rgba(21, 31, 28, 0.18);
+}
+
+.catch-fish-art span::before,
+.catch-fish-art span::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  border: 4px solid var(--deep-line);
+  background: var(--fish-color, #d4dce1);
+}
+
+.catch-fish-art span::before {
+  left: -33px;
+  width: 34px;
+  height: 24px;
+  transform: skewY(-18deg);
+}
+
+.catch-fish-art span::after {
+  right: -24px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff8da;
+  box-shadow: 5px 0 0 -1px var(--deep-line);
+}
+
+.catch-main-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 3px solid var(--deep-line);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.36), transparent 44%),
+    linear-gradient(180deg, #fff1bd, #ddbd78);
+  font-weight: 950;
+}
+
+.catch-main-info strong {
+  font-size: 22px;
+}
+
+.catch-main-info span {
+  padding: 6px 10px;
+  border: 2px solid rgba(126, 78, 28, 0.45);
+  border-radius: 999px;
+  background: #ffe7a0;
+  color: #7a4d18;
+}
+
+.catch-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.catch-stat-grid div {
+  padding: 10px 12px;
+  border: 3px solid var(--deep-line);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.36), transparent 44%),
+    linear-gradient(180deg, #fff8d8, #d9edc9);
+}
+
+.catch-stat-grid dt {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.catch-stat-grid dd {
+  margin: 0;
+  color: #24322d;
+  font-weight: 950;
+}
+
+.catch-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.catch-actions button {
+  width: auto;
+  margin-top: 0;
+}
+
+#catchToBasketButton {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.44), transparent 42%),
+    linear-gradient(180deg, #d9f5bb, #8fc76c 54%, #5c914d);
+}
+
+#catchSellButton {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.46), transparent 42%),
+    linear-gradient(180deg, #d9faff, #78c7ce 55%, #3b8d96);
+}
+
 @media (max-width: 1080px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -707,6 +875,19 @@ canvas {
   }
 
   .dex-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .catch-main-info,
+  .catch-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .catch-main-info {
+    display: grid;
+  }
+
+  .catch-stat-grid {
     grid-template-columns: 1fr;
   }
 }

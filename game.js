@@ -15,6 +15,11 @@ const newRunButton = document.getElementById("newRunButton");
 const summaryModal = document.getElementById("summaryModal");
 const summaryBody = document.getElementById("summaryBody");
 const summaryRestart = document.getElementById("summaryRestart");
+const catchResultModal = document.getElementById("catchResultModal");
+const catchResultCard = document.getElementById("catchResultCard");
+const catchResultBody = document.getElementById("catchResultBody");
+const catchToBasketButton = document.getElementById("catchToBasketButton");
+const catchSellButton = document.getElementById("catchSellButton");
 const panelLayer = document.getElementById("panelLayer");
 const panelButtons = document.querySelectorAll("[data-open-panel]");
 const panelWindows = document.querySelectorAll("[data-panel]");
@@ -162,6 +167,7 @@ function newState() {
     mode: "idle",
     biteTimer: 0,
     currentFish: null,
+    pendingCatch: null,
     distance: 100,
     tension: 0,
     fishX: 640,
@@ -190,6 +196,7 @@ function startRun() {
   state = newState();
   pointer = { down: false, x: 0, y: 0, pull: 0 };
   summaryModal.hidden = true;
+  closeCatchResult();
   closePanels();
   showToast("点击抛竿，等鱼影靠近后拖拽收线。", 2200);
   renderPanel();
@@ -253,8 +260,9 @@ function finishCatch() {
   const fish = state.currentFish;
   const sizeRoll = Math.round((fish.size * (0.75 + Math.random() * 0.6)) * 100) / 100;
   const value = Math.round(fish.value * (0.85 + sizeRoll * 0.25));
-  const catchItem = { ...fish, sizeRoll, value };
-  state.basket.push(catchItem);
+  const isNewDex = !state.dex.has(fish.name);
+  const catchItem = { ...fish, sizeRoll, value, isNewDex };
+  state.pendingCatch = catchItem;
   state.dex.add(fish.name);
   state.stats.caught += 1;
   state.stats.currentStreak += 1;
@@ -264,7 +272,58 @@ function finishCatch() {
   if (!state.stats.biggest || sizeRoll > state.stats.biggest.sizeRoll) state.stats.biggest = catchItem;
   state.mode = "idle";
   state.currentFish = null;
-  showToast(`钓到了 ${fish.name}，价值 ${value} 金币。`, 1800);
+  checkQuestRewards();
+  openCatchResult(catchItem);
+  renderPanel();
+}
+
+function rarityLabel(rarity) {
+  return ["", "常见", "少见", "稀有", "传说"][rarity] || `稀有度 ${rarity}`;
+}
+
+function openCatchResult(catchItem) {
+  catchResultCard.className = `modal-card catch-card ${catchItem.dream ? "is-dream" : ""} ${catchItem.rarity >= 3 ? "is-rare" : ""}`;
+  catchResultBody.innerHTML = `
+    <div class="catch-fish-art" style="--fish-color: ${catchItem.color}">
+      <span></span>
+    </div>
+    <div class="catch-main-info">
+      <strong>${catchItem.name}</strong>
+      <span>${rarityLabel(catchItem.rarity)}</span>
+    </div>
+    <dl class="catch-stat-grid">
+      <div><dt>尺寸</dt><dd>${catchItem.sizeRoll} 尺</dd></div>
+      <div><dt>价值</dt><dd>${catchItem.value} 金币</dd></div>
+      <div><dt>梦幻鱼</dt><dd>${catchItem.dream ? "是" : "否"}</dd></div>
+      <div><dt>新图鉴</dt><dd>${catchItem.isNewDex ? "首次发现" : "已发现"}</dd></div>
+    </dl>
+  `;
+  catchResultModal.hidden = false;
+}
+
+function closeCatchResult() {
+  catchResultModal.hidden = true;
+  catchResultBody.innerHTML = "";
+}
+
+function acceptCatchToBasket() {
+  if (!state.pendingCatch || state.ended) return;
+  const catchItem = state.pendingCatch;
+  state.basket.push(catchItem);
+  state.pendingCatch = null;
+  closeCatchResult();
+  showToast(`${catchItem.name} 放入鱼篓。`, 1300);
+  renderPanel();
+}
+
+function sellPendingCatch() {
+  if (!state.pendingCatch || state.ended) return;
+  const catchItem = state.pendingCatch;
+  state.coins += catchItem.value;
+  state.stats.earned += catchItem.value;
+  state.pendingCatch = null;
+  closeCatchResult();
+  showToast(`卖掉 ${catchItem.name}，获得 ${catchItem.value} 金币。`, 1500);
   checkQuestRewards();
   renderPanel();
 }
@@ -323,7 +382,10 @@ function endRun() {
   if (state.ended) return;
   state.ended = true;
   state.mode = "idle";
-  const unsold = state.basket.reduce((sum, fish) => sum + fish.value, 0);
+  const pendingValue = state.pendingCatch ? state.pendingCatch.value : 0;
+  state.pendingCatch = null;
+  closeCatchResult();
+  const unsold = state.basket.reduce((sum, fish) => sum + fish.value, 0) + pendingValue;
   state.coins += unsold;
   state.stats.earned += unsold;
   state.basket = [];
@@ -377,9 +439,18 @@ function update(dt) {
     state.fishX = shoreX + 110 + state.distance * 5.2;
     state.fishY += Math.sin(state.wave * 9) * fish.struggle * 0.8;
 
-    if (state.distance <= reelTargetDistance) finishCatch();
-    if (state.tension > lineLimit) failCatch("鱼线绷断了。");
-    if (state.distance >= 121) failCatch("鱼挣脱了。");
+    if (state.distance <= reelTargetDistance) {
+      finishCatch();
+      return;
+    }
+    if (state.tension > lineLimit) {
+      failCatch("鱼线绷断了。");
+      return;
+    }
+    if (state.distance >= 121) {
+      failCatch("鱼挣脱了。");
+      return;
+    }
   }
 
   checkQuestRewards();
@@ -826,6 +897,8 @@ castButton.addEventListener("click", castLine);
 sellButton.addEventListener("click", sellBasket);
 newRunButton.addEventListener("click", startRun);
 summaryRestart.addEventListener("click", startRun);
+catchToBasketButton.addEventListener("click", acceptCatchToBasket);
+catchSellButton.addEventListener("click", sellPendingCatch);
 
 upgradesEl.addEventListener("click", (event) => {
   const button = event.target.closest("[data-upgrade]");
