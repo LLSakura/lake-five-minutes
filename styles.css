@@ -455,11 +455,11 @@ canvas {
 .upgrade {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 12px;
   align-items: center;
-  min-height: 59px;
-  padding: 10px;
+  min-height: 92px;
+  padding: 12px;
   border: 3px solid var(--deep-line);
   border-radius: 11px;
   background:
@@ -468,8 +468,17 @@ canvas {
   box-shadow: inset 0 0 0 2px rgba(255, 216, 151, 0.26), inset 0 -4px 0 rgba(78, 40, 24, 0.24);
 }
 
-.upgrade::before {
-  content: "";
+.upgrade.locked {
+  filter: saturate(0.82);
+}
+
+.upgrade.maxed {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.22), transparent 28%),
+    linear-gradient(180deg, #8ec887, #5f9c66 58%, #3f6d4a);
+}
+
+.upgrade-icon {
   width: 14px;
   height: 14px;
   border: 3px solid var(--deep-line);
@@ -479,28 +488,74 @@ canvas {
   box-shadow: inset 0 0 0 2px rgba(255,255,255,0.28);
 }
 
-.upgrade {
-  grid-template-columns: 18px 1fr auto;
+.upgrade-info {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.upgrade-title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 10px;
 }
 
 .upgrade strong {
-  display: block;
-  margin-bottom: 3px;
   color: #fff5cf;
-  font-size: 14px;
+  font-size: 16px;
   text-shadow: 0 2px 0 rgba(64, 34, 21, 0.7);
 }
 
 .upgrade span {
   color: #ffe3a0;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   text-shadow: 0 1px 0 rgba(64, 34, 21, 0.45);
 }
 
+.upgrade p {
+  color: #fff2bf;
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1.35;
+  text-shadow: 0 1px 0 rgba(64, 34, 21, 0.45);
+}
+
+.upgrade-next,
+.upgrade-cost {
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.upgrade-next {
+  color: #d9fbff;
+  text-shadow: 0 1px 0 rgba(28, 55, 54, 0.5);
+}
+
+.upgrade-cost {
+  width: fit-content;
+  padding: 4px 7px;
+  border: 2px solid rgba(38, 53, 47, 0.45);
+  border-radius: 999px;
+  background: rgba(255, 248, 216, 0.86);
+  color: #5f3a16;
+}
+
+.upgrade.locked .upgrade-cost {
+  background: #ffe1cf;
+  color: #8c3829;
+}
+
+.upgrade.maxed .upgrade-cost {
+  background: #e6ffd7;
+  color: #24513b;
+}
+
 .upgrade button {
-  min-width: 86px;
-  min-height: 38px;
+  min-width: 94px;
+  min-height: 42px;
   border-width: 2px;
   border-radius: 8px;
   font-size: 13px;
@@ -876,6 +931,15 @@ canvas {
 
   .dex-grid {
     grid-template-columns: 1fr;
+  }
+
+  .upgrade {
+    grid-template-columns: 20px minmax(0, 1fr);
+  }
+
+  .upgrade button {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 
   .catch-main-info,

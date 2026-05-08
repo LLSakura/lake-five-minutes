@@ -90,10 +90,34 @@ const fishCatalog = [
 ];
 
 const upgradeDefs = {
-  rod: { name: "鱼竿", desc: "收线效率", base: 45 },
-  line: { name: "鱼线", desc: "最大张力", base: 40 },
-  bait: { name: "鱼饵", desc: "上钩速度", base: 35 },
-  luck: { name: "幸运值", desc: "稀有概率", base: 55 },
+  rod: {
+    name: "鱼竿",
+    desc: "收线效率",
+    base: 45,
+    levels: ["旧木竿", "竹节竿", "铜轮竿", "月纹竿", "星尘竿"],
+    effects: ["收线力度 +6.5", "收线力度 +13", "收线力度 +19.5", "收线力度 +26", "收线力度 +32.5"],
+  },
+  line: {
+    name: "鱼线",
+    desc: "最大张力",
+    base: 40,
+    levels: ["细麻线", "结实线", "银丝线", "月光线", "星绳"],
+    effects: ["张力上限 +15", "张力上限 +30", "张力上限 +45", "张力上限 +60", "张力上限 +75"],
+  },
+  bait: {
+    name: "鱼饵",
+    desc: "上钩速度",
+    base: 35,
+    levels: ["面包饵", "虫饵", "亮片饵", "星糖饵", "梦萤饵"],
+    effects: ["等待时间 -0.35 秒", "等待时间 -0.7 秒", "等待时间 -1.05 秒", "等待时间 -1.4 秒", "等待时间 -1.75 秒"],
+  },
+  luck: {
+    name: "幸运值",
+    desc: "稀有概率",
+    base: 55,
+    levels: ["普通铃", "绿玉铃", "月石铃", "星辉铃", "湖神铃"],
+    effects: ["梦幻权重 +16%", "梦幻权重 +32%", "梦幻权重 +48%", "梦幻权重 +64%", "梦幻权重 +80%"],
+  },
 };
 
 const questPool = [
@@ -225,7 +249,7 @@ function chooseFish() {
   const choices = fishCatalog.filter((fish) => fish.seasons.includes(state.season.id) || fish.name === "星尘鱼");
   const weighted = choices.map((fish) => {
     let weight = 8 / Math.pow(fish.rarity, 1.45);
-    if (fish.bait === currentBaitName()) weight *= 1.75;
+    if (baitMatches(fish)) weight *= 1.75;
     if (fish.name === state.season.bonus) weight *= 1.8;
     if (fish.dream) weight *= 0.55 + luck * 0.16;
     return { fish, weight };
@@ -240,11 +264,13 @@ function chooseFish() {
 }
 
 function currentBaitName() {
-  const level = state.upgrades.bait;
-  if (level >= 4) return "星糖饵";
-  if (level >= 3) return "亮片饵";
-  if (level >= 2) return "虫饵";
-  return "面包饵";
+  return upgradeLevelName("bait", state.upgrades.bait);
+}
+
+function baitMatches(fish) {
+  const baitLevel = state.upgrades.bait;
+  if (fish.bait === currentBaitName()) return true;
+  return baitLevel >= 5 && (fish.dream || fish.bait === "星糖饵");
 }
 
 function hookFish() {
@@ -356,7 +382,8 @@ function upgrade(key) {
   if (state.coins < cost || level >= 5 || state.ended) return;
   state.coins -= cost;
   state.upgrades[key] += 1;
-  showToast(`${upgradeDefs[key].name} 升到 ${state.upgrades[key]} 级。`, 1200);
+  const def = upgradeDefs[key];
+  showToast(`${def.name} 升级为 ${upgradeLevelName(key, state.upgrades[key])}。`, 1500);
   renderPanel();
 }
 
@@ -364,6 +391,14 @@ function upgradeCost(key) {
   const def = upgradeDefs[key];
   const level = state.upgrades[key];
   return Math.round(def.base * Math.pow(1.55, level - 1));
+}
+
+function upgradeLevelName(key, level) {
+  return upgradeDefs[key].levels[level - 1] || `Lv.${level}`;
+}
+
+function upgradeEffect(key, level) {
+  return upgradeDefs[key].effects[level - 1] || upgradeDefs[key].desc;
 }
 
 function checkQuestRewards() {
@@ -807,10 +842,22 @@ function renderPanel() {
     const level = state.upgrades[key];
     const cost = upgradeCost(key);
     const maxed = level >= 5;
+    const shortfall = Math.max(0, cost - state.coins);
+    const statusText = maxed ? "已满级" : shortfall > 0 ? `还差 ${shortfall} 金币` : `升级费用 ${cost} 金币`;
+    const buttonText = maxed ? "满级" : shortfall > 0 ? `差 ${shortfall} 金` : `${cost} 金`;
     return `
-      <div class="upgrade">
-        <div><strong>${def.name} Lv.${level}</strong><span>${def.desc}</span></div>
-        <button data-upgrade="${key}" ${maxed || state.coins < cost || state.ended ? "disabled" : ""}>${maxed ? "满级" : `${cost} 金`}</button>
+      <div class="upgrade ${maxed ? "maxed" : ""} ${shortfall > 0 && !maxed ? "locked" : ""}">
+        <div class="upgrade-icon" aria-hidden="true"></div>
+        <div class="upgrade-info">
+          <div class="upgrade-title">
+            <strong>${def.name}</strong>
+            <span>Lv.${level} · ${upgradeLevelName(key, level)}</span>
+          </div>
+          <p>${def.desc}：${upgradeEffect(key, level)}</p>
+          <div class="upgrade-next">${maxed ? "已达到最高等级" : `下一级：${upgradeLevelName(key, level + 1)} · ${upgradeEffect(key, level + 1)}`}</div>
+          <div class="upgrade-cost">${statusText}</div>
+        </div>
+        <button data-upgrade="${key}" ${maxed || shortfall > 0 || state.ended ? "disabled" : ""}>${buttonText}</button>
       </div>
     `;
   }).join("");
