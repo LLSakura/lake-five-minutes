@@ -824,52 +824,221 @@ canvas {
 }
 
 .catch-fish-art {
+  position: relative;
+  overflow: hidden;
   display: grid;
   place-items: center;
-  min-height: 112px;
+  min-height: 132px;
   border: 4px solid var(--deep-line);
   border-radius: 12px;
   background:
+    radial-gradient(circle at 22% 25%, rgba(255, 255, 210, 0.24), transparent 18%),
+    linear-gradient(90deg, rgba(255,255,255,0.12) 0 10%, transparent 10% 18%, rgba(255,255,255,0.1) 18% 28%, transparent 28%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.38), transparent 46%),
     linear-gradient(180deg, #91d1db, #4f9a9a);
   box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.22), inset 0 -5px 0 rgba(31, 81, 84, 0.22);
 }
 
-.catch-fish-art span {
-  position: relative;
-  width: 118px;
-  height: 46px;
-  border: 4px solid var(--deep-line);
-  border-radius: 12px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.46), transparent 42%),
-    var(--fish-color, #d4dce1);
-  box-shadow: 0 8px 0 rgba(21, 31, 28, 0.18);
-}
-
-.catch-fish-art span::before,
-.catch-fish-art span::after {
+.catch-fish-art::before,
+.catch-fish-art::after {
   content: "";
   position: absolute;
-  top: 9px;
+  left: 22px;
+  right: 22px;
+  height: 5px;
+  background: rgba(34, 94, 99, 0.25);
+}
+
+.catch-fish-art::before {
+  top: 31px;
+}
+
+.catch-fish-art::after {
+  bottom: 30px;
+}
+
+.catch-fish-sprite {
+  position: relative;
+  width: 196px;
+  height: 74px;
+  filter: drop-shadow(0 10px 0 rgba(21, 31, 28, 0.18));
+  z-index: 1;
+}
+
+.catch-fish-sprite .body {
+  position: relative;
+  display: block;
+  width: 128px;
+  height: 52px;
+  margin: 11px 0 0 47px;
   border: 4px solid var(--deep-line);
-  background: var(--fish-color, #d4dce1);
+  border-radius: 16px 18px 18px 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), transparent 34%),
+    linear-gradient(90deg, rgba(255, 249, 194, 0.4), transparent 30%),
+    var(--fish-color, #d4dce1);
+  box-shadow: inset 0 -7px 0 rgba(38, 49, 42, 0.14);
 }
 
-.catch-fish-art span::before {
-  left: -33px;
-  width: 34px;
-  height: 24px;
-  transform: skewY(-18deg);
+.catch-fish-sprite .tail,
+.catch-fish-sprite .fin,
+.catch-fish-sprite .eye,
+.catch-fish-sprite .shine,
+.catch-fish-sprite .mark {
+  position: absolute;
+  display: block;
 }
 
-.catch-fish-art span::after {
-  right: -24px;
-  width: 13px;
-  height: 13px;
+.catch-fish-sprite .tail {
+  left: 13px;
+  top: 18px;
+  width: 42px;
+  height: 38px;
+  border: 4px solid var(--deep-line);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.42), transparent 45%),
+    var(--fish-color, #d4dce1);
+  clip-path: polygon(100% 0, 0 20%, 0 80%, 100% 100%);
+}
+
+.catch-fish-sprite .fin {
+  width: 28px;
+  height: 16px;
+  border: 4px solid var(--deep-line);
+  background: rgba(255, 236, 153, 0.72);
+}
+
+.catch-fish-sprite .fin.top {
+  left: 72px;
+  top: 2px;
+  clip-path: polygon(18% 100%, 88% 100%, 58% 0);
+}
+
+.catch-fish-sprite .fin.bottom {
+  left: 78px;
+  bottom: 0;
+  clip-path: polygon(20% 0, 90% 0, 58% 100%);
+}
+
+.catch-fish-sprite .eye {
+  right: 2px;
+  top: 23px;
+  width: 27px;
+  height: 27px;
+  border: 5px solid var(--deep-line);
   border-radius: 50%;
   background: #fff8da;
-  box-shadow: 5px 0 0 -1px var(--deep-line);
+}
+
+.catch-fish-sprite .eye::after {
+  content: "";
+  position: absolute;
+  right: 5px;
+  top: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--deep-line);
+}
+
+.catch-fish-sprite .shine {
+  background: rgba(255, 255, 210, 0.85);
+  box-shadow: 0 0 0 2px rgba(38, 49, 42, 0.12);
+}
+
+.catch-fish-sprite .shine.s1 {
+  left: 68px;
+  top: 22px;
+  width: 42px;
+  height: 6px;
+}
+
+.catch-fish-sprite .shine.s2 {
+  right: 38px;
+  bottom: 20px;
+  width: 24px;
+  height: 4px;
+}
+
+.catch-fish-sprite .mark {
+  background: rgba(38, 49, 42, 0.34);
+}
+
+.pattern-stripes .mark,
+.pattern-bands .mark {
+  top: 20px;
+  width: 6px;
+  height: 32px;
+}
+
+.pattern-stripes .m1,
+.pattern-bands .m1 { left: 68px; }
+.pattern-stripes .m2,
+.pattern-bands .m2 { left: 88px; }
+.pattern-stripes .m3,
+.pattern-bands .m3 { left: 108px; }
+.pattern-stripes .m4,
+.pattern-bands .m4 { left: 128px; }
+.pattern-stripes .m5,
+.pattern-bands .m5 { left: 148px; }
+
+.pattern-spots .mark,
+.pattern-sparkle .mark {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+}
+
+.pattern-spots .m1,
+.pattern-sparkle .m1 { left: 72px; top: 24px; }
+.pattern-spots .m2,
+.pattern-sparkle .m2 { left: 95px; top: 38px; }
+.pattern-spots .m3,
+.pattern-sparkle .m3 { left: 117px; top: 25px; }
+.pattern-spots .m4,
+.pattern-sparkle .m4 { left: 139px; top: 39px; }
+.pattern-spots .m5,
+.pattern-sparkle .m5 { left: 155px; top: 25px; }
+
+.pattern-scales .mark,
+.pattern-crest .mark {
+  width: 10px;
+  height: 5px;
+  border-radius: 6px 6px 0 0;
+}
+
+.pattern-scales .m1,
+.pattern-crest .m1 { left: 70px; top: 24px; }
+.pattern-scales .m2,
+.pattern-crest .m2 { left: 93px; top: 33px; }
+.pattern-scales .m3,
+.pattern-crest .m3 { left: 116px; top: 24px; }
+.pattern-scales .m4,
+.pattern-crest .m4 { left: 139px; top: 33px; }
+.pattern-scales .m5,
+.pattern-crest .m5 { left: 154px; top: 24px; }
+
+.catch-fish-art.special .catch-fish-sprite::before {
+  content: "";
+  position: absolute;
+  left: 78px;
+  top: -4px;
+  width: 13px;
+  height: 13px;
+  background: #fff2a8;
+  box-shadow: 18px 3px 0 #fff2a8;
+  transform: rotate(45deg);
+}
+
+.catch-fish-art.dream .catch-fish-sprite::after {
+  content: "";
+  position: absolute;
+  left: 34px;
+  top: 4px;
+  width: 5px;
+  height: 5px;
+  background: #fffed2;
+  box-shadow: 126px 2px 0 #fffed2, 145px 52px 0 #fffed2, 26px 59px 0 #fffed2;
 }
 
 .catch-main-info {

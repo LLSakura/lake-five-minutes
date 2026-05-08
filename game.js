@@ -339,10 +339,25 @@ function fishPatternType(fish) {
 }
 
 function openCatchResult(catchItem) {
+  const pattern = fishPatternType(catchItem);
   catchResultCard.className = `modal-card catch-card ${catchItem.dream ? "is-dream" : ""} ${catchItem.rarity >= 3 ? "is-rare" : ""}`;
   catchResultBody.innerHTML = `
-    <div class="catch-fish-art" style="--fish-color: ${catchItem.color}">
-      <span></span>
+    <div class="catch-fish-art ${catchItem.dream ? "dream" : ""} ${catchItem.seasonSpecial ? "special" : ""}" style="--fish-color: ${catchItem.color}">
+      <div class="catch-fish-sprite pattern-${pattern}" aria-hidden="true">
+        <span class="tail"></span>
+        <span class="body">
+          <i class="mark m1"></i>
+          <i class="mark m2"></i>
+          <i class="mark m3"></i>
+          <i class="mark m4"></i>
+          <i class="mark m5"></i>
+        </span>
+        <span class="fin top"></span>
+        <span class="fin bottom"></span>
+        <span class="eye"></span>
+        <span class="shine s1"></span>
+        <span class="shine s2"></span>
+      </div>
     </div>
     <div class="catch-main-info">
       <strong>${catchItem.name}</strong>
