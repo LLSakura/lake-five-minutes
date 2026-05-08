@@ -9,6 +9,8 @@ const basketEl = document.getElementById("basket");
 const upgradesEl = document.getElementById("upgrades");
 const questsEl = document.getElementById("quests");
 const dexEl = document.getElementById("dex");
+const dexSeasonFilter = document.getElementById("dexSeasonFilter");
+const dexRarityFilter = document.getElementById("dexRarityFilter");
 const castButton = document.getElementById("castButton");
 const sellButton = document.getElementById("sellButton");
 const newRunButton = document.getElementById("newRunButton");
@@ -178,6 +180,7 @@ let state;
 let pointer = { down: false, x: 0, y: 0, pull: 0 };
 let lastFrame = performance.now();
 let toastTimer = 0;
+let dexFilters = { season: "all", rarity: "all" };
 
 function openPanel(panelName) {
   panelLayer.hidden = false;
@@ -320,6 +323,19 @@ function finishCatch() {
 
 function rarityLabel(rarity) {
   return ["", "常见", "少见", "稀有", "传说"][rarity] || `稀有度 ${rarity}`;
+}
+
+function seasonShortName(seasonId) {
+  return { spring: "春", summer: "夏", autumn: "秋", winter: "冬" }[seasonId] || seasonId;
+}
+
+function fishPatternType(fish) {
+  if (fish.dream) return "sparkle";
+  if (fish.seasonSpecial) return "crest";
+  if (fish.name.includes("纹") || fish.name.includes("鲈")) return "stripes";
+  if (fish.name.includes("珍珠") || fish.name.includes("星")) return "spots";
+  if (fish.name.includes("鳟") || fish.name.includes("鲑")) return "bands";
+  return fish.rarity >= 3 ? "spots" : "scales";
 }
 
 function openCatchResult(catchItem) {
@@ -745,7 +761,7 @@ function drawFishShadows() {
     drawFish(state.fishX + Math.sin(state.wave * 3) * 8, state.fishY + Math.cos(state.wave * 2.5) * 4, "#2f6f83", 1.1, true);
   }
   if (state.mode === "reeling" && state.currentFish) {
-    drawFish(state.fishX, state.fishY, state.currentFish.color, state.currentFish.size, false);
+    drawFish(state.fishX, state.fishY, state.currentFish.color, state.currentFish.size, false, state.currentFish);
   }
   for (let i = 0; i < 7; i++) {
     const x = (i * 137 + state.wave * 18) % 990;
@@ -754,10 +770,11 @@ function drawFishShadows() {
   }
 }
 
-function drawFish(x, y, color, scale, shadow) {
+function drawFish(x, y, color, scale, shadow, fish = null) {
   const w = 32 * scale;
   const h = 17 * scale;
   const wiggle = Math.sin(state.wave * 8 + x * 0.02) * 2 * scale;
+  const pattern = fish ? fishPatternType(fish) : "scales";
   ctx.save();
   ctx.translate(x, y + wiggle * 0.35);
 
@@ -783,6 +800,14 @@ function drawFish(x, y, color, scale, shadow) {
   ctx.fillRect(w / 2 - 2 * scale, -h / 4 + wiggle, 11 * scale, h / 2);
   ctx.fillRect(-w / 2 - 10 * scale, -h / 3 - wiggle, 11 * scale, h / 1.5);
 
+  ctx.fillStyle = "rgba(255, 236, 153, 0.52)";
+  ctx.fillRect(-w / 2 + 5 * scale, -h / 2 - 5 * scale, 11 * scale, 5 * scale);
+  ctx.fillRect(w / 2 - 9 * scale, -h / 2 - 4 * scale, 10 * scale, 4 * scale);
+  ctx.fillStyle = "rgba(38, 49, 42, 0.35)";
+  ctx.fillRect(-w / 2 + 4 * scale, h / 2, 12 * scale, 5 * scale);
+
+  drawFishPattern(w, h, scale, pattern, fish);
+
   ctx.fillStyle = "rgba(255, 255, 255, 0.46)";
   ctx.fillRect(-w / 2 + 7 * scale, -h / 2 + 3 * scale, w * 0.42, 3 * scale);
   ctx.fillStyle = "rgba(255, 246, 184, 0.42)";
@@ -793,15 +818,60 @@ function drawFish(x, y, color, scale, shadow) {
   ctx.fillStyle = "#fff7ce";
   ctx.fillRect(-w / 2 + 8 * scale, -2 * scale, 1.5 * scale, 1.5 * scale);
 
-  ctx.fillStyle = "rgba(38, 49, 42, 0.32)";
-  for (let i = 0; i < 3; i++) {
-    ctx.fillRect(-w / 2 + (15 + i * 7) * scale, -h / 2 + 6 * scale, 2 * scale, h - 9 * scale);
-  }
-
-  if (color === "#8f8cff" || color === "#c8d8ff" || color === "#ecfbff") {
+  if (fish?.dream || color === "#8f8cff" || color === "#c8d8ff" || color === "#ecfbff") {
     ctx.fillStyle = "rgba(255, 255, 210, 0.92)";
     ctx.fillRect(w / 2 + 9 * scale, -h / 2 - 5 * scale, 4 * scale, 4 * scale);
     ctx.fillRect(-w / 2 - 14 * scale, h / 2 + 2 * scale, 3 * scale, 3 * scale);
+    ctx.fillRect(-w / 2 + 2 * scale, -h / 2 - 9 * scale, 3 * scale, 3 * scale);
+  }
+
+  ctx.restore();
+}
+
+function drawFishPattern(w, h, scale, pattern, fish) {
+  ctx.save();
+  ctx.fillStyle = "rgba(38, 49, 42, 0.32)";
+
+  if (pattern === "stripes" || pattern === "bands") {
+    const count = pattern === "bands" ? 4 : 3;
+    for (let i = 0; i < count; i++) {
+      const x = -w / 2 + (10 + i * 7) * scale;
+      ctx.fillRect(x, -h / 2 + 4 * scale, 3 * scale, h - 7 * scale);
+      ctx.fillRect(x + 3 * scale, -h / 2 + 7 * scale, 2 * scale, h - 11 * scale);
+    }
+  }
+
+  if (pattern === "spots" || pattern === "sparkle") {
+    for (let i = 0; i < 5; i++) {
+      const x = -w / 2 + (9 + i * 6) * scale;
+      const y = -h / 2 + (i % 2 ? 10 : 5) * scale;
+      ctx.fillRect(x, y, 3 * scale, 3 * scale);
+    }
+  }
+
+  if (pattern === "scales" || pattern === "crest") {
+    for (let row = 0; row < 2; row++) {
+      for (let i = 0; i < 4; i++) {
+        ctx.fillRect(-w / 2 + (10 + i * 6 + row * 3) * scale, -h / 2 + (5 + row * 6) * scale, 3 * scale, 2 * scale);
+      }
+    }
+  }
+
+  if (pattern === "crest") {
+    ctx.fillStyle = "rgba(255, 245, 180, 0.72)";
+    ctx.fillRect(-w / 2 + 12 * scale, -h / 2 - 8 * scale, 5 * scale, 5 * scale);
+    ctx.fillRect(-w / 2 + 18 * scale, -h / 2 - 6 * scale, 4 * scale, 4 * scale);
+  }
+
+  if (pattern === "sparkle") {
+    ctx.fillStyle = "rgba(255, 255, 210, 0.82)";
+    ctx.fillRect(-w / 2 + 12 * scale, -h / 2 + 5 * scale, 4 * scale, 4 * scale);
+    ctx.fillRect(w / 2 - 11 * scale, h / 2 - 7 * scale, 3 * scale, 3 * scale);
+  }
+
+  if (fish?.seasonSpecial) {
+    ctx.fillStyle = "rgba(255, 247, 198, 0.65)";
+    ctx.fillRect(-w / 2 + 4 * scale, -h / 2 + 2 * scale, 6 * scale, 2 * scale);
   }
 
   ctx.restore();
@@ -847,6 +917,8 @@ function renderPanel() {
   seasonLabel.textContent = `${state.season.name} · 当前鱼饵：${currentBaitName()}`;
   castButton.disabled = state.mode !== "idle" || state.ended;
   sellButton.disabled = !state.basket.length || state.ended;
+  dexSeasonFilter.value = dexFilters.season;
+  dexRarityFilter.value = dexFilters.rarity;
 
   basketEl.className = state.basket.length ? "basket" : "basket empty";
   basketEl.innerHTML = state.basket.length
@@ -888,9 +960,15 @@ function renderPanel() {
     `;
   }).join("");
 
-  dexEl.innerHTML = fishCatalog.map((fish) => {
+  const filteredFish = fishCatalog.filter((fish) => {
+    const seasonMatch = dexFilters.season === "all" || fish.seasons.includes(dexFilters.season);
+    const rarityMatch = dexFilters.rarity === "all" || String(fish.rarity) === dexFilters.rarity;
+    return seasonMatch && rarityMatch;
+  });
+
+  dexEl.innerHTML = filteredFish.map((fish) => {
     const found = state.dex.has(fish.name);
-    const seasonNames = fish.seasons.map((seasonId) => seasons.find((season) => season.id === seasonId)?.name.slice(0, 1)).join(" / ");
+    const seasonNames = fish.seasons.map(seasonShortName).join(" / ");
     return `
       <div class="dex-card ${found ? "" : "locked"} ${fish.seasonSpecial ? "special" : ""}">
         ${found ? `
@@ -898,10 +976,13 @@ function renderPanel() {
           <span>${rarityLabel(fish.rarity)} · ${fish.dream ? "梦幻鱼" : "普通鱼"} · ${fish.value} 金</span>
           <em>${seasonNames}${fish.seasonSpecial ? " · 季节特殊" : ""}</em>
           <p>${fish.description}</p>
-        ` : "未知鱼影"}
+        ` : `
+          <strong>未知鱼影</strong>
+          <span>${rarityLabel(fish.rarity)} · ${seasonNames}</span>
+        `}
       </div>
     `;
-  }).join("");
+  }).join("") || `<div class="dex-empty">没有符合筛选的鱼影</div>`;
 }
 
 function showToast(message, duration = 1200) {
@@ -960,6 +1041,16 @@ panelCloseButtons.forEach((button) => {
 
 panelLayer.addEventListener("click", (event) => {
   if (event.target === panelLayer) closePanels();
+});
+
+dexSeasonFilter.addEventListener("change", () => {
+  dexFilters.season = dexSeasonFilter.value;
+  renderPanel();
+});
+
+dexRarityFilter.addEventListener("change", () => {
+  dexFilters.rarity = dexRarityFilter.value;
+  renderPanel();
 });
 
 document.addEventListener("keydown", (event) => {

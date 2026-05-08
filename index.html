@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>湖边五分钟</title>
-    <link rel="stylesheet" href="styles.css?v=20260508-fish-expansion">
+    <link rel="stylesheet" href="styles.css?v=20260508-dex-fish-art">
   </head>
   <body>
     <main class="app-shell">
@@ -59,6 +59,28 @@
       <section id="dexPanel" class="panel-block game-window" data-panel="dex" hidden>
         <button class="window-close" type="button" data-close-panel aria-label="关闭图鉴">×</button>
         <h2>图鉴</h2>
+        <div class="dex-filters" aria-label="图鉴筛选">
+          <label>
+            季节
+            <select id="dexSeasonFilter">
+              <option value="all">全部</option>
+              <option value="spring">春</option>
+              <option value="summer">夏</option>
+              <option value="autumn">秋</option>
+              <option value="winter">冬</option>
+            </select>
+          </label>
+          <label>
+            稀有度
+            <select id="dexRarityFilter">
+              <option value="all">全部</option>
+              <option value="1">常见</option>
+              <option value="2">少见</option>
+              <option value="3">稀有</option>
+              <option value="4">传说</option>
+            </select>
+          </label>
+        </div>
         <div id="dex" class="dex-grid"></div>
       </section>
     </div>
@@ -82,6 +104,6 @@
       </div>
     </div>
 
-    <script src="game.js?v=20260508-fish-expansion"></script>
+    <script src="game.js?v=20260508-dex-fish-art"></script>
   </body>
 </html>

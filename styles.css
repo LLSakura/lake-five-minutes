@@ -616,6 +616,35 @@ canvas {
   gap: 10px;
 }
 
+.dex-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.dex-filters label {
+  display: grid;
+  gap: 5px;
+  color: #3b2a1b;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.dex-filters select {
+  width: 100%;
+  min-height: 40px;
+  border: 3px solid var(--deep-line);
+  border-radius: 9px;
+  padding: 6px 9px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.46), transparent 44%),
+    linear-gradient(180deg, #fff8d8, #e8d7a7);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 900;
+}
+
 .dex-card {
   position: relative;
   display: grid;
@@ -672,12 +701,31 @@ canvas {
 }
 
 .dex-card.locked {
-  min-height: 74px;
-  place-items: center;
+  min-height: 86px;
+  align-content: center;
   color: #6d786f;
   background:
     linear-gradient(135deg, rgba(255,255,255,0.2), transparent 38%),
     repeating-linear-gradient(135deg, #aab3ad 0 9px, #8e9992 9px 18px);
+}
+
+.dex-card.locked strong,
+.dex-card.locked span {
+  color: #f7f0dc;
+  text-shadow: 0 2px 0 rgba(36, 50, 45, 0.46);
+}
+
+.dex-empty {
+  grid-column: 1 / -1;
+  padding: 16px;
+  border: 3px solid var(--deep-line);
+  border-radius: 11px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.36), transparent 44%),
+    linear-gradient(180deg, #fff1bd, #ddbd78);
+  color: #3b2a1b;
+  font-weight: 950;
+  text-align: center;
 }
 
 .modal[hidden] {
@@ -960,6 +1008,10 @@ canvas {
   }
 
   .dex-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dex-filters {
     grid-template-columns: 1fr;
   }
 
