@@ -78,15 +78,30 @@ const seasons = [
 ];
 
 const fishCatalog = [
-  { name: "小鲫鱼", rarity: 1, value: 18, size: 1, struggle: 0.55, bait: "面包饵", seasons: ["spring", "summer", "autumn", "winter"], dream: false, color: "#b7a16b" },
-  { name: "银鲤鱼", rarity: 1, value: 28, size: 1.25, struggle: 0.72, bait: "面包饵", seasons: ["spring", "summer", "autumn"], dream: false, color: "#d4dce1" },
-  { name: "黑鲈鱼", rarity: 2, value: 42, size: 1.45, struggle: 1.02, bait: "虫饵", seasons: ["summer", "autumn"], dream: false, color: "#35434a" },
-  { name: "金鳟鱼", rarity: 3, value: 76, size: 1.2, struggle: 0.98, bait: "亮片饵", seasons: ["spring", "winter"], dream: false, color: "#e7b23d" },
-  { name: "月光鱼", rarity: 3, value: 88, size: 1.1, struggle: 0.82, bait: "星糖饵", seasons: ["autumn"], dream: true, color: "#c8d8ff" },
-  { name: "云朵鱼", rarity: 2, value: 54, size: 1, struggle: 0.58, bait: "星糖饵", seasons: ["spring"], dream: true, color: "#fff5f1" },
-  { name: "琥珀鱼", rarity: 3, value: 96, size: 1.35, struggle: 1.05, bait: "亮片饵", seasons: ["autumn", "summer"], dream: true, color: "#f39a48" },
-  { name: "星尘鱼", rarity: 4, value: 140, size: 0.9, struggle: 1.18, bait: "星糖饵", seasons: ["spring", "summer", "autumn", "winter"], dream: true, color: "#8f8cff" },
-  { name: "雪铃鱼", rarity: 3, value: 90, size: 0.95, struggle: 0.66, bait: "星糖饵", seasons: ["winter"], dream: true, color: "#ecfbff" },
+  { name: "小鲫鱼", rarity: 1, value: 18, size: 1, struggle: 0.55, bait: "面包饵", seasons: ["spring", "summer", "autumn", "winter"], dream: false, color: "#b7a16b", description: "最常见的小鱼，喜欢贴着码头阴影游动。" },
+  { name: "银鲤鱼", rarity: 1, value: 28, size: 1.25, struggle: 0.72, bait: "面包饵", seasons: ["spring", "summer", "autumn"], dream: false, color: "#d4dce1", description: "鳞片像银叶一样闪亮，成群掠过浅水。" },
+  { name: "青苔鳑鲏", rarity: 1, value: 20, size: 0.82, struggle: 0.48, bait: "面包饵", seasons: ["spring", "summer"], dream: false, color: "#7ab783", description: "小巧灵活，常在水草边啄食青苔。" },
+  { name: "芦影鱼", rarity: 1, value: 24, size: 0.95, struggle: 0.62, bait: "虫饵", seasons: ["spring", "autumn"], dream: false, color: "#8e9b62", description: "背鳍像芦苇叶，黄昏时最容易靠岸。" },
+  { name: "溪纹鳟", rarity: 1, value: 32, size: 1.18, struggle: 0.76, bait: "虫饵", seasons: ["spring", "winter"], dream: false, color: "#a4c5b1", description: "身上有细小水纹，喜欢清冷的入湖溪口。" },
+  { name: "荷叶鳅", rarity: 1, value: 26, size: 0.88, struggle: 0.68, bait: "面包饵", seasons: ["summer"], dream: false, color: "#6e8f4f", description: "总躲在荷叶影子下，拉起来时会扭得很欢。" },
+  { name: "红鳍鲫", rarity: 1, value: 30, size: 1.05, struggle: 0.7, bait: "虫饵", seasons: ["summer", "autumn"], dream: false, color: "#c27b5b", description: "红色鱼鳍很醒目，是夏秋交界的常客。" },
+  { name: "霜背鲦", rarity: 1, value: 27, size: 0.92, struggle: 0.57, bait: "面包饵", seasons: ["winter"], dream: false, color: "#c7dbe2", description: "背部像落了一层薄霜，在冬季浅水中发亮。" },
+  { name: "黑鲈鱼", rarity: 2, value: 42, size: 1.45, struggle: 1.02, bait: "虫饵", seasons: ["summer", "autumn"], dream: false, color: "#35434a", description: "力气很足，会突然向深水冲刺。" },
+  { name: "云朵鱼", rarity: 2, value: 54, size: 1, struggle: 0.58, bait: "星糖饵", seasons: ["spring"], dream: true, color: "#fff5f1", seasonSpecial: true, description: "春天才会飘来的轻盈梦幻鱼，像云影落进水里。" },
+  { name: "萤火鱼", rarity: 2, value: 58, size: 0.98, struggle: 0.7, bait: "星糖饵", seasons: ["summer"], dream: true, color: "#e6f47a", seasonSpecial: true, description: "夏夜会发出微光，靠近浮标时像一颗小灯。" },
+  { name: "枫叶鲤", rarity: 2, value: 52, size: 1.22, struggle: 0.86, bait: "亮片饵", seasons: ["autumn"], dream: false, color: "#d66f3c", seasonSpecial: true, description: "鳞片像一枚枚枫叶，秋风起时更活跃。" },
+  { name: "冰晶鳟", rarity: 2, value: 60, size: 1.12, struggle: 0.82, bait: "亮片饵", seasons: ["winter"], dream: false, color: "#9bd2ef", seasonSpecial: true, description: "透明鱼鳍像薄冰，冬季水面微亮时会出现。" },
+  { name: "珍珠鲤", rarity: 2, value: 48, size: 1.3, struggle: 0.8, bait: "亮片饵", seasons: ["spring", "summer"], dream: false, color: "#f3d9b5", description: "腹侧有珍珠般的小斑点，卖相很好。" },
+  { name: "松针鱼", rarity: 2, value: 46, size: 1.05, struggle: 0.78, bait: "虫饵", seasons: ["autumn", "winter"], dream: false, color: "#65784f", description: "细长安静，常藏在落叶和枯枝的阴影里。" },
+  { name: "金鳟鱼", rarity: 3, value: 76, size: 1.2, struggle: 0.98, bait: "亮片饵", seasons: ["spring", "winter"], dream: false, color: "#e7b23d", description: "耀眼的金色鳞片让它很难被错过，也很难拉住。" },
+  { name: "樱瓣鱼", rarity: 3, value: 84, size: 0.9, struggle: 0.74, bait: "星糖饵", seasons: ["spring"], dream: true, color: "#f5aac0", seasonSpecial: true, description: "春日限定，游动时像樱花瓣顺水打旋。" },
+  { name: "雷纹鲈", rarity: 3, value: 92, size: 1.48, struggle: 1.15, bait: "亮片饵", seasons: ["summer"], dream: false, color: "#5967a7", seasonSpecial: true, description: "夏夜雷声后会躁动，鱼线张力很容易飙高。" },
+  { name: "月光鱼", rarity: 3, value: 88, size: 1.1, struggle: 0.82, bait: "星糖饵", seasons: ["autumn"], dream: true, color: "#c8d8ff", seasonSpecial: true, description: "秋夜限定，鳞片会映出一轮小小的月亮。" },
+  { name: "琥珀鱼", rarity: 3, value: 96, size: 1.35, struggle: 1.05, bait: "亮片饵", seasons: ["autumn", "summer"], dream: true, color: "#f39a48", description: "像被夕阳封进琥珀里的鱼，价值很高。" },
+  { name: "雪铃鱼", rarity: 3, value: 90, size: 0.95, struggle: 0.66, bait: "星糖饵", seasons: ["winter"], dream: true, color: "#ecfbff", seasonSpecial: true, description: "冬雪中才会轻响的梦幻鱼，挣扎温柔但很罕见。" },
+  { name: "极光鲑", rarity: 3, value: 104, size: 1.42, struggle: 1.08, bait: "星糖饵", seasons: ["winter"], dream: true, color: "#8fe6d5", seasonSpecial: true, description: "背上流动着极光色，常在寒夜深水处现身。" },
+  { name: "星尘鱼", rarity: 4, value: 140, size: 0.9, struggle: 1.18, bait: "星糖饵", seasons: ["spring", "summer", "autumn", "winter"], dream: true, color: "#8f8cff", description: "全年都可能出现的传说鱼，鱼尾会洒下细碎星光。" },
+  { name: "湖灵鱼", rarity: 4, value: 168, size: 1.05, struggle: 1.24, bait: "星糖饵", seasons: ["spring", "summer", "autumn", "winter"], dream: true, color: "#7ee7c8", description: "传说是湖水本身的化身，只回应最安静的等待。" },
 ];
 
 const upgradeDefs = {
@@ -875,7 +890,17 @@ function renderPanel() {
 
   dexEl.innerHTML = fishCatalog.map((fish) => {
     const found = state.dex.has(fish.name);
-    return `<div class="dex-card ${found ? "" : "locked"}">${found ? `${fish.name}<br>${fish.dream ? "梦幻鱼" : "普通鱼"} · ${fish.value} 金` : "未知鱼影"}</div>`;
+    const seasonNames = fish.seasons.map((seasonId) => seasons.find((season) => season.id === seasonId)?.name.slice(0, 1)).join(" / ");
+    return `
+      <div class="dex-card ${found ? "" : "locked"} ${fish.seasonSpecial ? "special" : ""}">
+        ${found ? `
+          <strong>${fish.name}</strong>
+          <span>${rarityLabel(fish.rarity)} · ${fish.dream ? "梦幻鱼" : "普通鱼"} · ${fish.value} 金</span>
+          <em>${seasonNames}${fish.seasonSpecial ? " · 季节特殊" : ""}</em>
+          <p>${fish.description}</p>
+        ` : "未知鱼影"}
+      </div>
+    `;
   }).join("");
 }
 
