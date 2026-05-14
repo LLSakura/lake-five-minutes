@@ -28,6 +28,7 @@ const panelWindows = document.querySelectorAll("[data-panel]");
 const panelCloseButtons = document.querySelectorAll("[data-close-panel]");
 
 const RUN_SECONDS = 300;
+const SESSION_SAVE_KEY = "lakeFiveMinutesSessionProgress";
 const shoreX = 185;
 const waterTop = 235;
 const reelTargetDistance = 26;
@@ -181,6 +182,7 @@ let pointer = { down: false, x: 0, y: 0, pull: 0 };
 let lastFrame = performance.now();
 let toastTimer = 0;
 let dexFilters = { season: "all", rarity: "all" };
+let sessionProgress = loadSessionProgress();
 
 function openPanel(panelName) {
   panelLayer.hidden = false;
@@ -196,6 +198,85 @@ function closePanels() {
     panel.hidden = true;
   });
 }
+
+function defaultSessionProgress() {
+  return {
+    dex: [],
+    upgrades: { rod: 1, line: 1, bait: 1, luck: 1 },
+    records: {
+      caught: 0,
+      dreamCaught: 0,
+      earned: 0,
+      failed: 0,
+      biggest: null,
+    },
+  };
+}
+
+function loadSessionProgress() {
+  try {
+    const raw = sessionStorage.getItem(SESSION_SAVE_KEY);
+    if (!raw) return defaultSessionProgress();
+    const parsed = JSON.parse(raw);
+    const fallback = defaultSessionProgress();
+    return {
+      dex: Array.isArray(parsed.dex) ? parsed.dex.filter((name) => fishCatalog.some((fish) => fish.name === name)) : [],
+      upgrades: {
+        rod: clampUpgradeLevel(parsed.upgrades?.rod ?? fallback.upgrades.rod),
+        line: clampUpgradeLevel(parsed.upgrades?.line ?? fallback.upgrades.line),
+        bait: clampUpgradeLevel(parsed.upgrades?.bait ?? fallback.upgrades.bait),
+        luck: clampUpgradeLevel(parsed.upgrades?.luck ?? fallback.upgrades.luck),
+      },
+      records: {
+        caught: Math.max(0, Number(parsed.records?.caught) || 0),
+        dreamCaught: Math.max(0, Number(parsed.records?.dreamCaught) || 0),
+        earned: Math.max(0, Number(parsed.records?.earned) || 0),
+        failed: Math.max(0, Number(parsed.records?.failed) || 0),
+        biggest: parsed.records?.biggest || null,
+      },
+    };
+  } catch {
+    return defaultSessionProgress();
+  }
+}
+
+function clampUpgradeLevel(level) {
+  return Math.max(1, Math.min(5, Number(level) || 1));
+}
+
+function saveSessionProgress() {
+  sessionProgress.dex = [...state.dex];
+  sessionProgress.upgrades = { ...state.upgrades };
+  try {
+    sessionStorage.setItem(SESSION_SAVE_KEY, JSON.stringify(sessionProgress));
+  } catch {
+    showToast("本次浏览记录保存失败，浏览器可能限制了会话存储。", 1600);
+  }
+}
+
+function recordSessionCatch(catchItem) {
+  sessionProgress.records.caught += 1;
+  if (catchItem.dream) sessionProgress.records.dreamCaught += 1;
+  if (!sessionProgress.records.biggest || catchItem.sizeRoll > sessionProgress.records.biggest.sizeRoll) {
+    sessionProgress.records.biggest = {
+      name: catchItem.name,
+      sizeRoll: catchItem.sizeRoll,
+      value: catchItem.value,
+    };
+  }
+  saveSessionProgress();
+}
+
+function recordSessionEarned(value) {
+  sessionProgress.records.earned += value;
+  saveSessionProgress();
+}
+
+function recordSessionFailure() {
+  sessionProgress.records.failed += 1;
+  saveSessionProgress();
+}
+
 function newState() {
   const season = seasons[Math.floor(Math.random() * seasons.length)];
   return {
@@ -203,8 +284,8 @@ function newState() {
     timeLeft: RUN_SECONDS,
     coins: 0,
     basket: [],
-    dex: new Set(),
-    upgrades: { rod: 1, line: 1, bait: 1, luck: 1 },
+    dex: new Set(sessionProgress.dex),
+    upgrades: { ...sessionProgress.upgrades },
     quests: pickQuests(),
     mode: "idle",
     biteTimer: 0,
@@ -314,6 +395,7 @@ function finishCatch() {
   if (fish.dream) state.stats.dreamCaught += 1;
   if (value > 80) state.stats.expensiveCaught = 1;
   if (!state.stats.biggest || sizeRoll > state.stats.biggest.sizeRoll) state.stats.biggest = catchItem;
+  recordSessionCatch(catchItem);
   state.mode = "idle";
   state.currentFish = null;
   checkQuestRewards();
@@ -393,6 +475,7 @@ function sellPendingCatch() {
   const catchItem = state.pendingCatch;
   state.coins += catchItem.value;
   state.stats.earned += catchItem.value;
+  recordSessionEarned(catchItem.value);
   state.pendingCatch = null;
   closeCatchResult();
   showToast(`卖掉 ${catchItem.name}，获得 ${catchItem.value} 金币。`, 1500);
@@ -407,6 +490,7 @@ function failCatch(reason) {
   state.distance = 100;
   state.stats.failed += 1;
   state.stats.currentStreak = 0;
+  recordSessionFailure();
   showToast(reason, 1600);
   renderPanel();
 }
@@ -416,6 +500,7 @@ function sellBasket() {
   const value = state.basket.reduce((sum, fish) => sum + fish.value, 0);
   state.coins += value;
   state.stats.earned += value;
+  recordSessionEarned(value);
   state.basket = [];
   showToast(`卖出鱼篓，获得 ${value} 金币。`, 1500);
   checkQuestRewards();
@@ -429,6 +514,7 @@ function upgrade(key) {
   state.coins -= cost;
   state.upgrades[key] += 1;
   const def = upgradeDefs[key];
+  saveSessionProgress();
   showToast(`${def.name} 升级为 ${upgradeLevelName(key, state.upgrades[key])}。`, 1500);
   renderPanel();
 }
@@ -454,6 +540,7 @@ function checkQuestRewards() {
       state.stats.rewardedQuests.add(index);
       state.coins += quest.reward;
       state.stats.earned += quest.reward;
+      recordSessionEarned(quest.reward);
       showToast(`任务完成：${quest.text}，奖励 ${quest.reward} 金币。`, 1800);
     }
   });
@@ -469,6 +556,7 @@ function endRun() {
   const unsold = state.basket.reduce((sum, fish) => sum + fish.value, 0) + pendingValue;
   state.coins += unsold;
   state.stats.earned += unsold;
+  if (unsold > 0) recordSessionEarned(unsold);
   state.basket = [];
   const completed = state.quests.filter((quest, index) => {
     return state.stats.rewardedQuests.has(index) || quest.progress(state) >= quest.goal;
